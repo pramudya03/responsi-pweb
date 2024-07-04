@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="booking.css">
+    <link rel="stylesheet" type="text/css" href="BOOKING.js">
+    <video autoplay muted loop id="background-video">
+        <source src="bg2.mp4" type="video/mp4">
+    </video>
+    <header>
+        <h1>SUNSHINE HOTEL</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">LOBBY</a></li>
+                <li><a href="booking.html">RESERVASI</a></li>
+                <li><a href="kamar.html">JENIS KAMAR</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <title>Booking Tickets</title>
+</head>
+<body>
+    <div class="card">
+        <h2>Booking Tickets</h2>
+        <form id="booking-form">
+            <div class="form-group">
+                <label for="name">Nama:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="service">Jenis Kamar:</label>
+                <select id="service" name="service" required>
+                    <option value="Standard">Standard</option>
+                    <option value="Superior">Superior</option>
+                    <option value="Suite">Suite</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="checkin">Tanggal Check-in:</label>
+                <input type="date" id="checkin" name="checkin" required>
+            </div>
+            <div class="form-group">
+                <label for="checkout">Tanggal Check-out:</label>
+                <input type="date" id="checkout" name="checkout" required>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Booking">
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <div class="output">
+            <h3>Antrian:</h3>
+            <div id="queue-container"></div>
+            <button id="download-btn" style="display: none;">Download</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Sunshine. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const form = document.getElementById("booking-form");
+        const queueContainer = document.getElementById("queue-container");
+        const downloadBtn = document.getElementById("download-btn");
+        let queue = [];
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const service = document.getElementById("service").value;
+            const checkin = document.getElementById("checkin").value;
+            const checkout = document.getElementById("checkout").value;
+
+            const booking = {
+                name: name,
+                email: email,
+                service: service,
+                checkin: checkin,
+                checkout: checkout
+            };
+
+            queue.push(booking);
+
+            displayQueue();
+            downloadBtn.style.display = "block";
+
+            // Clear the form inputs
+            form.reset();
+        });
+
+        downloadBtn.addEventListener("click", function() {
+            const queueText = generateQueueText();
+            const textFile = new Blob([queueText], { type: "text/plain" });
+            const fileName = "booking_queue.txt";
+            const downloadLink = document.createElement("a");
+            downloadLink.download = fileName;
+            downloadLink.href = window.URL.createObjectURL(textFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        });
+
+        function displayQueue() {
+            queueContainer.innerHTML = "";
+
+            for (let i = 0; i < queue.length; i++) {
+                const booking = queue[i];
+                const output = `
+                    <div class="queue-item">
+                        <h4>Antrian ${i + 1}</h4>
+                        <p>Nama: ${booking.name}</p>
+                        <p>Email: ${booking.email}</p>
+                        <p>Jenis Kamar: ${booking.service}</p>
+                        <p>Tanggal Check-in: ${booking.checkin}</p>
+                        <p>Tanggal Check-out: ${booking.checkout}</p>
+                    </div>
+                `;
+                queueContainer.innerHTML += output;
+            }
+        }
+
+        function generateQueueText() {
+            let queueText = "Bukti pemesanan kamar:\n\n";
+
+            for (let i = 0; i < queue.length; i++) {
+                const booking = queue[i];
+                queueText += `Antrian ${i + 1}:\n`;
+                queueText += `Nama: ${booking.name}\n`;
+                queueText += `Email: ${booking.email}\n`;
+                queueText += `Jenis Kamar: ${booking.service}\n`;
+                queueText += `Tanggal Check-in: ${booking.checkin}\n`;
+                queueText += `Tanggal Check-out: ${booking.checkout}\n\n`;
+            }
+
+            return queueText;
+        }
+    </script>
+</body>
+</html>
